@@ -1,5 +1,5 @@
 body {
-    background-color: #F8F8F8;
+    background-color: #FFFFFF;
     color: #111;
     font-family: "Courier New", Courier, monospace;
     font-size: 14px;
@@ -11,6 +11,7 @@ h1,
 h2,
 h3 {
     font-weight: normal;
+    font-size: inherit;
     letter-spacing: -1px;
 }
 
@@ -44,6 +45,7 @@ th,
 td {
     padding: 5px;
     text-align: left;
+    font-weight: normal;
 }
 
 ul {
@@ -52,37 +54,11 @@ ul {
 
 hr {
     border: 0;
-    border-top: 1px dashed #333;
-    margin: 10px 0;
+    border-top: 1px solid #111;
+    margin: 24px 0;
 }
 
-.container {
+header, section, footer {
     max-width: 600px;
     margin: 0 auto;
-}
-
-marquee {
-    font-size: 12px;
-    background: black;
-    color: white;
-    padding: 2px;
-}
-
-/* A subtle Jaar-esque quirk */
-body {
-    animation: backgroundColorChange 300s infinite;
-}
-
-@keyframes backgroundColorChange {
-    0% {
-        background-color: #F8F8F8;
-    }
-
-    50% {
-        background-color: #EEEEEE;
-    }
-
-    100% {
-        background-color: #F8F8F8;
-    }
 }
