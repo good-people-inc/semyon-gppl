@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍃</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: white;
+            cursor: pointer;
+            font-family: "Courier New", Courier, monospace;
+            /* Disable text selection */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .pop-image {
+            position: absolute;
+            border: 1px solid black;
+            max-width: 400px;
+            max-height: 400px;
+            background-color: white;
+        }
+
+        #ui-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        #center-text {
+            font-size: 14px;
+            color: #111;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .play-icon {
+            font-size: 14px;
+            color: black;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            pointer-events: auto;
+            padding: 0;
+        }
+
+        .play-icon:hover {
+            color: gray;
+        }
+
+        #bottom-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+        }
+
+        .back-btn {
+            font-size: 14px;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .back-btn:hover {
+            background-color: yellow;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ui-container">
+        <div id="center-text">
+            <span>click</span>
+            <button id="autoPlayBtn" class="play-icon">▶</button>
+        </div>
+    </div>
+
+    <div id="bottom-container">
+        <a href="index.html" class="back-btn" id="backBtn">&lt;- back</a>
+    </div>
+
+    <!-- Audio element for the song -->
+    <audio id="bgMusic" loop src="002 - You And Me Both.mp3"></audio>
+
+    <script src="media.js"></script>
+    <script>
+        // Keep track of up to 50 active elements on screen
+        const activeElements = [];
+        const MAX_ELEMENTS = 50;
+
+        // Queue logic
+        let mediaQueue = [];
+        let zIndexCounter = 1;
+
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Fill the queue randomly
+        function refillQueue() {
+            mediaQueue = shuffleArray(mediaFiles);
+        }
+
+        // Preload image for faster rendering
+        function preload(url) {
+            if (url.match(/\.(jpeg|jpg|gif|png)$/i)) {
+                const img = new Image();
+                img.src = url;
+            } else if (url.match(/\.(mp4|webm)$/i)) {
+                const vid = document.createElement('video');
+                vid.preload = "auto";
+                vid.src = url;
+            }
+        }
+
+        function popMedia() {
+            if (mediaQueue.length === 0) {
+                refillQueue();
+            }
+
+            const randomFile = mediaQueue.pop();
+            const mediaUrl = 'media/' + randomFile;
+            const isVideo = randomFile.endsWith('.mp4');
+
+            // Enforce max 50 items on screen by removing the oldest
+            if (activeElements.length >= MAX_ELEMENTS) {
+                const oldest = activeElements.shift();
+                if (oldest && oldest.parentNode) {
+                    oldest.parentNode.removeChild(oldest);
+                }
+            }
+
+            let mediaEl;
+            if (isVideo) {
+                mediaEl = document.createElement('video');
+                mediaEl.src = mediaUrl;
+                mediaEl.autoplay = true;
+                mediaEl.loop = true;
+                mediaEl.muted = true;
+                mediaEl.playsInline = true;
+            } else {
+                mediaEl = document.createElement('img');
+                mediaEl.src = mediaUrl;
+            }
+
+            mediaEl.className = 'pop-image';
+            mediaEl.style.zIndex = zIndexCounter++;
+
+            // Random position
+            const maxLeft = window.innerWidth - 400;
+            const maxTop = window.innerHeight - 400;
+            const randomX = Math.max(0, Math.floor(Math.random() * maxLeft));
+            const randomY = Math.max(0, Math.floor(Math.random() * maxTop));
+
+            mediaEl.style.left = randomX + 'px';
+            mediaEl.style.top = randomY + 'px';
+
+            document.body.appendChild(mediaEl);
+            activeElements.push(mediaEl);
+
+            if (isVideo) {
+                mediaEl.play().catch(e => console.log("Autoplay blocked"));
+            }
+
+            // Preload next file to ensure smooth loading on remote networks
+            if (mediaQueue.length > 0) {
+                preload('media/' + mediaQueue[mediaQueue.length - 1]);
+            }
+        }
+
+        // Handle Background Clicks
+        document.body.addEventListener('click', function (e) {
+            // Ignore if clicking a button
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+            popMedia();
+        });
+
+        // Handle Auto-Play Button
+        let autoPlayInterval = null;
+        const autoPlayBtn = document.getElementById('autoPlayBtn');
+        const bgMusic = document.getElementById('bgMusic');
+
+        autoPlayBtn.addEventListener('click', function (e) {
+            e.stopPropagation(); // prevent triggering the background click
+
+            if (autoPlayInterval) {
+                // Stop AutoPlay
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                bgMusic.pause();
+                autoPlayBtn.innerText = "▶";
+            } else {
+                // Start AutoPlay
+                popMedia(); // Pop one immediately
+                // 400ms / 1.5 = ~266ms for 1.5x speed
+                autoPlayInterval = setInterval(popMedia, 250);
+
+                // Play music
+                bgMusic.play().catch(err => {
+                    console.log("Audio play failed, maybe missing song file: ", err);
+                });
+                autoPlayBtn.innerText = "⏸";
+            }
+        });
+
+        // Initialize queue on load
+        refillQueue();
+        if (mediaQueue.length > 0) preload('media/' + mediaQueue[mediaQueue.length - 1]);
+
+    </script>
+</body>
+
+</html>

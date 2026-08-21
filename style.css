@@ -1,0 +1,88 @@
+body {
+    background-color: #F8F8F8;
+    color: #111;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    margin: 30px;
+    cursor: crosshair;
+}
+
+h1,
+h2,
+h3 {
+    font-weight: normal;
+    letter-spacing: -1px;
+}
+
+h1 a.no-hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+h1 a.no-hover:hover {
+    background-color: transparent;
+    color: inherit;
+}
+
+a {
+    color: blue;
+    text-decoration: underline;
+}
+
+a:hover {
+    background-color: yellow;
+    color: black;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 500px;
+}
+
+th,
+td {
+    padding: 5px;
+    text-align: left;
+}
+
+ul {
+    list-style-type: square;
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed #333;
+    margin: 10px 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+marquee {
+    font-size: 12px;
+    background: black;
+    color: white;
+    padding: 2px;
+}
+
+/* A subtle Jaar-esque quirk */
+body {
+    animation: backgroundColorChange 300s infinite;
+}
+
+@keyframes backgroundColorChange {
+    0% {
+        background-color: #F8F8F8;
+    }
+
+    50% {
+        background-color: #EEEEEE;
+    }
+
+    100% {
+        background-color: #F8F8F8;
+    }
+}
