@@ -31,6 +31,13 @@
             background-color: white;
         }
 
+        @media (max-width: 600px) {
+            .pop-image {
+                max-width: 200px;
+                max-height: 200px;
+            }
+        }
+
         #ui-container {
             position: absolute;
             top: 50%;
@@ -90,7 +97,7 @@
     <div id="ui-container">
         <div id="center-text">
             <span>click</span>
-            <button id="autoPlayBtn" class="play-icon">▶</button>
+            <button id="autoPlayBtn" class="play-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="vertical-align: middle;"><polygon points="4,2 4,12 11,7" /></svg></button>
         </div>
     </div>
 
@@ -171,8 +178,9 @@
             mediaEl.style.zIndex = zIndexCounter++;
 
             // Random position
-            const maxLeft = window.innerWidth - 400;
-            const maxTop = window.innerHeight - 400;
+            const maxImageSize = window.innerWidth <= 600 ? 200 : 400;
+            const maxLeft = window.innerWidth - maxImageSize;
+            const maxTop = window.innerHeight - maxImageSize;
             const randomX = Math.max(0, Math.floor(Math.random() * maxLeft));
             const randomY = Math.max(0, Math.floor(Math.random() * maxTop));
 
@@ -204,6 +212,9 @@
         const autoPlayBtn = document.getElementById('autoPlayBtn');
         const bgMusic = document.getElementById('bgMusic');
 
+        const playSVG = '<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="vertical-align: middle;"><polygon points="4,2 4,12 11,7" /></svg>';
+        const pauseSVG = '<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="vertical-align: middle;"><rect x="3" y="2" width="3" height="10" /><rect x="8" y="2" width="3" height="10" /></svg>';
+
         autoPlayBtn.addEventListener('click', function (e) {
             e.stopPropagation(); // prevent triggering the background click
 
@@ -212,7 +223,7 @@
                 clearInterval(autoPlayInterval);
                 autoPlayInterval = null;
                 bgMusic.pause();
-                autoPlayBtn.innerText = "▶";
+                autoPlayBtn.innerHTML = playSVG;
             } else {
                 // Start AutoPlay
                 popMedia(); // Pop one immediately
@@ -223,7 +234,7 @@
                 bgMusic.play().catch(err => {
                     console.log("Audio play failed, maybe missing song file: ", err);
                 });
-                autoPlayBtn.innerText = "⏸";
+                autoPlayBtn.innerHTML = pauseSVG;
             }
         });
 
