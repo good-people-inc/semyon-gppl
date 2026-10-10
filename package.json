@@ -1,0 +1,14 @@
+{
+  "name": "semyon-gppl",
+  "private": true,
+  "scripts": {
+    "build": "sh update_media.sh",
+    "start": "serve -l tcp://0.0.0.0:${PORT:-3000}"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "serve": "^14.2.6"
+  }
+}
